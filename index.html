@@ -9,7 +9,7 @@
 <link rel="icon" href="img/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="config.js"></script>
 <style>
 /* Layout: colonna unica da telefono; nastro di facciate pastello in testa; la "fase" del viaggio decide cosa si vede */
 :root{
@@ -384,36 +384,6 @@ a.chip{text-decoration:none;display:inline-block}
     </div>
   </section>
 
-  <div class="host" id="host" hidden>
-    <div class="host-label">Area host · solo per Lucia</div>
-    <h3 style="margin-top:10px">Crea il link per un ospite</h3>
-    <form class="form" id="gen" autocomplete="off">
-      <label>Nome dell'ospite<input id="g-n" placeholder="es. Anna"></label>
-      <div class="row">
-        <label>Arrivo<input type="date" id="g-a" required></label>
-        <label>Partenza<input type="date" id="g-p" required></label>
-      </div>
-      <div class="row">
-        <label>Lingua<select id="g-l"><option value="it">Italiano</option><option value="en">English</option></select></label>
-        <label>Password Wi-Fi<input id="g-w" placeholder="resta solo sul tuo telefono"></label>
-      </div>
-      <div class="out" id="g-out">Compila arrivo e partenza.</div>
-      <div class="acts">
-        <button type="button" class="chip" id="g-copy">Copia link</button>
-        <a class="chip" id="g-wa" href="#" target="_blank" rel="noopener">Invia su WhatsApp</a>
-        <a class="chip" id="g-open" href="#" target="_blank" rel="noopener">Apri anteprima</a>
-      </div>
-      <p class="note" style="margin:0">La password del Wi-Fi viaggia solo dentro il link dell'ospite: non è scritta nel sito.</p>
-    </form>
-    <h3 style="margin-top:22px">QR da stampare</h3>
-    <div class="qrcard">
-      <div class="q" id="qr" aria-label="QR code della guida"></div>
-      <div><div class="qt">Benvenuti a Corricella House</div><div class="qs">Inquadrate il codice per la guida della casa · Scan for the house guide</div></div>
-    </div>
-    <div class="url" id="qrurl"></div>
-    <p class="note">Il QR apre la guida completa, senza Wi-Fi e senza dati personali.</p>
-  </div>
-
   <footer>Corricella House · Via Marina Corricella 58, Procida · CIN IT063061C24ESE3E14</footer>
 </div>
 
@@ -491,7 +461,6 @@ a.chip{text-decoration:none;display:inline-block}
   };
   // ===== Configurazione =====
   var SITE='https://corricellahouseprocida.github.io/';
-  var SHEET_ID='';            // ID del foglio Google "Corricella Companion - Contenuti"
   var PHONE='393382220157';
   // Contenuti di riserva, usati se il foglio non è raggiungibile
   var DATA={
@@ -500,6 +469,7 @@ a.chip{text-decoration:none;display:inline-block}
     info:{}
   };
 
+  try{var cached=JSON.parse(localStorage.getItem('cc-data')||'null');if(cached&&cached.tips)DATA=cached}catch(e){}
   function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
   var DAY=864e5;
   function midday(d){d=new Date(d);d.setHours(12,0,0,0);return d}
@@ -511,7 +481,8 @@ a.chip{text-decoration:none;display:inline-block}
   var arrive=parseD(Q.get('a')), leave=parseD(Q.get('p'));
   if(arrive&&leave&&leave<=arrive)leave=null;
   var wifi=Q.get('w')||'';
-  var isDemo=Q.has('demo'), isHost=Q.has('host');
+  var isDemo=Q.has('demo'), isHost=false;
+  if(Q.has('host')){location.replace('gestione/');return}
   var today=midday(new Date());
   if(isDemo&&!arrive){arrive=new Date(today.getTime()+7*DAY);leave=new Date(arrive.getTime()+4*DAY);if(!guest)guest='Anna'}
 
@@ -638,59 +609,18 @@ a.chip{text-decoration:none;display:inline-block}
   if(wifi){document.getElementById('wifi-card').hidden=false;document.getElementById('wpass').textContent=wifi}
   document.getElementById('demo').hidden=!isDemo;
 
-  // ===== Contenuti dal foglio Google =====
-  function csv(text){
-    var rows=[],row=[],cell='',q=false;
-    for(var i=0;i<text.length;i++){var ch=text[i];
-      if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}
-      else if(ch==='"')q=true; else if(ch===','){row.push(cell);cell=''}
-      else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell=''} else if(ch!=='\r')cell+=ch}
-    if(cell||row.length){row.push(cell);rows.push(row)}
-    var h=(rows.shift()||[]).map(function(x){return x.trim().toLowerCase()});
-    return rows.map(function(r){var o={};h.forEach(function(k,i){o[k]=(r[i]||'').trim()});return o});
-  }
-  function tab(name){
-    return fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&headers=1&sheet='+encodeURIComponent(name))
-      .then(function(r){if(!r.ok)throw 0;return r.text()}).then(csv);
-  }
-  function on(v){return !/^(no|n|0|false)$/i.test((v||'').trim())}
-  if(SHEET_ID){
-    Promise.all([tab('Consigli'),tab('Numeri'),tab('Info')]).then(function(res){
-      var tips=res[0].filter(function(r){return on(r.attivo)&&r.italiano}).map(function(r){return{it:r.italiano,en:r.inglese||r.italiano}});
-      var nums=res[1].filter(function(r){return on(r.attivo)&&r.numero&&r.nome_it}).map(function(r){return{it:r.nome_it,en:r.nome_en||r.nome_it,n:r.numero}});
-      var info={};res[2].forEach(function(r){if(r.chiave&&r.italiano)info[r.chiave.trim().toLowerCase()]={it:r.italiano,en:r.inglese||r.italiano}});
-      if(tips.length)DATA.tips=tips; if(nums.length)DATA.nums=nums; DATA.info=info;
+  // ===== Contenuti dallo script Google (gestiti dalla dashboard) =====
+  var API=window.CC_API||'';
+  if(API){
+    fetch(API+'?action=public').then(function(r){return r.json()}).then(function(j){
+      if(!j||!j.ok)return;
+      var d=j.data||{};
+      if(d.tips&&d.tips.length)DATA.tips=d.tips;
+      if(d.nums&&d.nums.length)DATA.nums=d.nums;
+      DATA.info=d.info||{};
+      try{localStorage.setItem('cc-data',JSON.stringify(DATA))}catch(e){}
       render();
     }).catch(function(){});
-  }
-
-  // ===== Area host: generatore di link e QR =====
-  if(isHost){
-    document.getElementById('host').hidden=false;
-    var gn=document.getElementById('g-n'),ga=document.getElementById('g-a'),gp=document.getElementById('g-p'),gl=document.getElementById('g-l'),gw=document.getElementById('g-w');
-    gw.value=ls('cc-host-wifi')||'';
-    function gen(){
-      ls('cc-host-wifi',gw.value);
-      var out=document.getElementById('g-out'),wa=document.getElementById('g-wa'),op=document.getElementById('g-open');
-      if(!ga.value||!gp.value||gp.value<=ga.value){out.textContent=ga.value&&gp.value?'La partenza deve essere dopo l\'arrivo.':'Compila arrivo e partenza.';wa.removeAttribute('href');op.removeAttribute('href');return ''}
-      var p=new URLSearchParams();if(gn.value.trim())p.set('n',gn.value.trim());p.set('a',ga.value);p.set('p',gp.value);p.set('l',gl.value);if(gw.value.trim())p.set('w',gw.value.trim());
-      var link=SITE+'?'+p.toString();
-      out.textContent=link;
-      var nm=gn.value.trim();
-      var msg=gl.value==='en'
-        ?'Hi'+(nm?' '+nm:'')+'! Here is your guide for your stay at Corricella House: '+link+'\nSee you soon in Procida, Lucia'
-        :'Ciao'+(nm?' '+nm:'')+'! Ecco la guida per il vostro soggiorno a Corricella House: '+link+'\nA presto a Procida, Lucia';
-      wa.href='https://wa.me/?text='+encodeURIComponent(msg); op.href=link;
-      return link;
-    }
-    [gn,ga,gp,gl,gw].forEach(function(el){el.addEventListener('input',gen);el.addEventListener('change',gen)});
-    document.getElementById('gen').addEventListener('submit',function(e){e.preventDefault()});
-    document.getElementById('g-copy').addEventListener('click',function(){
-      var l=gen(),b=this;if(!l)return;
-      if(navigator.clipboard)navigator.clipboard.writeText(l).then(function(){b.textContent='Copiato'},function(){});
-    });
-    document.getElementById('qrurl').textContent=SITE;
-    try{var q=qrcode(0,'M');q.addData(SITE);q.make();document.getElementById('qr').innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
   }
 
   // Tramonto (algoritmo NOAA semplificato) per Procida
