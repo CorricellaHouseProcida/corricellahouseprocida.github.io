@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Corricella · Gestione</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f5c8c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Corricella">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<script src="../config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+/* Layout: app da tablet. Barra in alto con le sezioni, contenuto a colonna larga, barra "Salva" che compare solo se ci sono modifiche */
+:root{
+  --bg:#f3f6f8; --surface:#ffffff; --ink:#14283a; --muted:#5b6b7a; --line:#d9e1e8;
+  --sea:#0f5c8c; --sea-soft:#e2eef6; --giallo:#f1cf6b; --rosa:#e9a6a1; --celeste:#8fc3de; --ocra:#d99a52; --menta:#9fcdb8;
+  --ok:#2f7d5b; --err:#b23b2e; --warn:#b5651d;
+  --f-display:"Gloock", Georgia, "Times New Roman", serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0c1822; --surface:#13222f; --ink:#e7eef4; --muted:#9db0c0; --line:#24384a;
+  --sea:#6fb6e3; --sea-soft:#163247; --ok:#6cc79c; --err:#f08a7c; --warn:#e7a465; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45}
+.facades{display:flex;height:10px}.facades span{flex:1}
+.facades span:nth-child(5n+1){background:var(--rosa)}.facades span:nth-child(5n+2){background:var(--giallo)}.facades span:nth-child(5n+3){background:var(--celeste)}.facades span:nth-child(5n+4){background:var(--ocra)}.facades span:nth-child(5n+5){background:var(--menta)}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:8px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand img{width:48px;height:48px;border-radius:12px;flex:none}
+.brand b{font-family:var(--f-display);font-weight:400;font-size:24px;display:block;line-height:1.1}
+.brand small{color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+button,input,textarea,select{font:inherit;color:inherit}
+.ghost{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:15px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-block:10px;position:sticky;top:0;background:var(--bg);z-index:5}
+nav button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 18px;font-weight:700;font-size:16px;cursor:pointer}
+nav button[aria-current="true"]{background:var(--sea);border-color:var(--sea);color:var(--surface)}
+:focus-visible{outline:3px solid var(--giallo);outline-offset:2px}
+h2{font-family:var(--f-display);font-weight:400;font-size:30px;margin:18px 0 4px}
+.lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:12px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:700;color:var(--muted);min-width:0}
+input.in,textarea.in,select.in{font-weight:400;width:100%;min-width:0;font-size:17px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+textarea.in{resize:vertical;min-height:84px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three{display:grid;grid-template-columns:1.2fr 1.2fr 1fr;gap:12px}
+@media (max-width:620px){.two,.three{grid-template-columns:1fr}}
+.item{display:flex;flex-direction:column;gap:12px}
+.item.off{opacity:.55}
+.itemhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tag{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--sea)}
+.switch{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;cursor:pointer}
+.switch input{appearance:none;width:48px;height:28px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;margin:0;transition:background .15s}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.switch input:checked{background:var(--ok)}
+.switch input:checked::after{left:23px}
+.del{border:0;background:none;color:var(--err);font-weight:700;cursor:pointer;font-size:15px;padding:6px 4px}
+.add{width:100%;border:2px dashed var(--line);background:transparent;border-radius:18px;padding:16px;font-weight:700;color:var(--sea);cursor:pointer;font-size:17px}
+.today{background:var(--sea-soft);border-radius:14px;padding:14px 16px;font-size:15px}
+.today q{font-family:var(--f-display);font-size:19px;display:block;margin-top:4px;quotes:"«" "»"}
+.out{font-family:var(--f-mono);font-size:13px;word-break:break-all;background:var(--sea-soft);border-radius:12px;padding:12px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:14px;padding:14px 20px;font-weight:700;font-size:17px;cursor:pointer;background:var(--sea);color:var(--surface);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.sec{background:var(--surface);color:var(--sea);border:1px solid var(--line)}
+.btn[aria-disabled="true"]{opacity:.4;pointer-events:none}
+.qrcard{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:#fff;color:#14283a;border-radius:14px;padding:16px}
+.qrcard .q{width:140px;height:140px}.qrcard .q svg{width:100%;height:100%;display:block}
+.qrcard .qt{font-family:var(--f-display);font-size:22px;line-height:1.15}.qrcard .qs{font-size:14px;color:#5b6b7a;margin-top:4px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--ink);color:var(--bg);display:flex;justify-content:center;
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.savebar .in2{max-width:820px;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.savebar .btn{background:var(--giallo);color:#1b1a14}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:11;background:var(--ok);color:#fff;font-weight:700;padding:10px 18px;border-radius:999px}
+.toast.err{background:var(--err)}
+/* Login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login .box{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+.login img{width:96px;height:96px;border-radius:22px}
+.login h1{font-family:var(--f-display);font-weight:400;font-size:30px;margin:0}
+.pin{font-family:var(--f-mono);font-size:30px;letter-spacing:.4em;text-align:center;width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink)}
+.msg{min-height:1.4em;color:var(--err);font-weight:600;font-size:15px}
+.setup{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:15px;text-align:left}
+</style>
+</head>
+<body>
+<div class="facades" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<!-- Accesso -->
+<section class="login" id="login">
+  <form class="box" id="login-form" autocomplete="off">
+    <img src="icon-192.png" alt="">
+    <h1>Corricella House</h1>
+    <p class="note">Inserisci il PIN per gestire la guida.</p>
+    <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" aria-label="PIN">
+    <button class="btn" type="submit" style="width:100%;justify-content:center" id="login-btn">Entra</button>
+    <div class="msg" id="login-msg" role="alert"></div>
+    <div class="setup" id="nocfg" hidden>Manca l'indirizzo dello script Google. Incollalo nel file <b>config.js</b> del sito su GitHub.</div>
+  </form>
+</section>
+
+<!-- App -->
+<div id="app" hidden>
+  <div class="wrap">
+    <header>
+      <div class="brand"><img src="icon-192.png" alt=""><div><small>Gestione</small><b>Corricella House</b></div></div>
+      <button class="ghost" id="logout">Esci</button>
+    </header>
+    <nav aria-label="Sezioni">
+      <button data-s="ospiti" id="n-ospiti">Ospiti</button>
+      <button data-s="consigli" id="n-consigli">Consigli</button>
+      <button data-s="numeri" id="n-numeri">Numeri utili</button>
+      <button data-s="casa" id="n-casa">Casa e chiavi</button>
+    </nav>
+
+    <!-- Ospiti -->
+    <section data-sec="ospiti">
+      <h2>Link per un ospite</h2>
+      <p class="lead">Compila i dati e manda la guida personale su WhatsApp.</p>
+      <form class="card stack" id="gen" autocomplete="off">
+        <label class="f">Nome dell'ospite<input class="in" id="g-n" placeholder="es. Anna"></label>
+        <div class="two">
+          <label class="f">Arrivo<input class="in" type="date" id="g-a"></label>
+          <label class="f">Partenza<input class="in" type="date" id="g-p"></label>
+        </div>
+        <div class="two">
+          <label class="f">Lingua<select class="in" id="g-l"><option value="it">Italiano</option><option value="en">English</option></select></label>
+          <label class="f">Password Wi-Fi<input class="in" id="g-w" placeholder="resta solo su questo tablet"></label>
+        </div>
+        <div class="out" id="g-out">Compila arrivo e partenza.</div>
+        <div class="acts">
+          <a class="btn" id="g-wa" target="_blank" rel="noopener" aria-disabled="true">Invia su WhatsApp</a>
+          <button type="button" class="btn sec" id="g-copy">Copia link</button>
+          <a class="btn sec" id="g-open" target="_blank" rel="noopener" aria-disabled="true">Anteprima</a>
+        </div>
+        <p class="note">La password del Wi-Fi non è scritta nel sito: viaggia solo dentro il link dell'ospite.</p>
+      </form>
+      <h2>QR per la casa</h2>
+      <p class="lead">Da stampare e mettere vicino alla porta e in cucina. Apre la guida completa, senza dati personali.</p>
+      <div class="qrcard"><div class="q" id="qr"></div><div><div class="qt">Benvenuti a Corricella House</div><div class="qs">Inquadrate il codice per la guida della casa · Scan for the house guide</div></div></div>
+      <p class="note" style="margin-top:12px">Per stamparlo, fai uno screenshot del riquadro.</p>
+    </section>
+
+    <!-- Consigli -->
+    <section data-sec="consigli" hidden>
+      <h2>I consigli di Lucia</h2>
+      <p class="lead">La guida ne mostra uno al giorno, a rotazione, tra quelli attivi. L'inglese si può lasciare vuoto.</p>
+      <div class="today" id="today"></div>
+      <div class="stack" id="tips" style="margin-top:14px"></div>
+      <button class="add" id="add-tip" style="margin-top:12px">+ Aggiungi un consiglio</button>
+    </section>
+
+    <!-- Numeri -->
+    <section data-sec="numeri" hidden>
+      <h2>Numeri utili</h2>
+      <p class="lead">Compaiono nella guida durante il soggiorno. Una riga senza numero non viene mostrata.</p>
+      <div class="stack" id="nums"></div>
+      <button class="add" id="add-num" style="margin-top:12px">+ Aggiungi un numero</button>
+    </section>
+
+    <!-- Casa -->
+    <section data-sec="casa" hidden>
+      <h2>Casa e chiavi</h2>
+      <p class="lead">Testi fissi della guida. Lasciate vuoto un campo per non mostrarlo.</p>
+      <div class="stack" id="info"></div>
+    </section>
+
+    <p class="note" style="margin-top:28px">Guida: <a href="../" target="_blank" rel="noopener">completa</a> · <a href="../?demo=1" target="_blank" rel="noopener">simulazione delle fasi</a></p>
+  </div>
+</div>
+
+<div class="savebar" id="savebar" hidden>
+  <div class="in2"><span>Ci sono modifiche non salvate.</span><button class="btn" id="save">Salva modifiche</button></div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(function(){
+  var API=window.CC_API||'';
+  var SITE=new URL('../',location.href).href;
+  var GUIDE='https://corricellahouseprocida.github.io/';
+  if(/github\.io$/.test(location.hostname))SITE=location.origin+'/';
+  else SITE=GUIDE;
+  var INFO=[['checkin','Check-in','Es. Check-in dalle 12:00'],['chiavi_arrivo','Chiavi all\'arrivo','Dove e come si ritirano le chiavi'],['chiavi_partenza','Chiavi alla partenza','Dove si lasciano le chiavi al check-out']];
+  var state=null, dirty=false, pin='';
+
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function on(v){return !/^(no|n|0|false)$/i.test(String(v||'').trim())}
+
+  function call(action,data){
+    return fetch(API,{method:'POST',body:JSON.stringify({pin:pin,action:action,data:data})})
+      .then(function(r){return r.json()})
+      .then(function(j){if(!j.ok)throw new Error(j.error||'Errore');return j});
+  }
+  function toast(t,err){var el=$('toast');el.textContent=t;el.className='toast'+(err?' err':'');el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){el.hidden=true},2600)}
+  function setDirty(v){dirty=v;$('savebar').hidden=!v}
+
+  // ---- Accesso
+  if(!API){$('nocfg').hidden=false;$('login-btn').disabled=true}
+  $('login-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    pin=$('pin').value.trim(); if(!pin)return;
+    $('login-msg').textContent='';$('login-btn').textContent='Accesso…';
+    call('load').then(function(j){ls('cc-pin',pin);start(j.data)})
+      .catch(function(err){$('login-msg').textContent=err.message==='Failed to fetch'?'Nessuna connessione con lo script. Controlla internet.':err.message})
+      .then(function(){$('login-btn').textContent='Entra'});
+  });
+  $('logout').addEventListener('click',function(){
+    if(dirty&&!$('logout').dataset.sure){$('logout').dataset.sure='1';$('logout').textContent='Esci senza salvare?';return}
+    ls('cc-pin',null);location.reload();
+  });
+
+  function start(data){
+    state={Consigli:data.Consigli||[],Numeri:data.Numeri||[],Info:data.Info||[]};
+    INFO.forEach(function(k){if(!state.Info.some(function(r){return r.chiave===k[0]}))state.Info.push({chiave:k[0],italiano:'',inglese:''})});
+    $('login').hidden=true;$('app').hidden=false;
+    renderTips();renderNums();renderInfo();setDirty(false);
+    go(ls('cc-sec')||'ospiti');
+  }
+
+  // ---- Sezioni
+  function go(s){
+    document.querySelectorAll('[data-sec]').forEach(function(x){x.hidden=x.dataset.sec!==s});
+    document.querySelectorAll('nav [data-s]').forEach(function(b){b.setAttribute('aria-current',b.dataset.s===s)});
+    ls('cc-sec',s);
+  }
+  document.querySelectorAll('nav [data-s]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.s)})});
+
+  // ---- Consigli
+  function renderToday(){
+    var act=state.Consigli.filter(function(r){return on(r.attivo)&&r.italiano});
+    var t=new Date(),doy=Math.floor((t-new Date(t.getFullYear(),0,0))/864e5);
+    $('today').innerHTML=act.length?'Oggi la guida mostra:<q>'+esc(act[doy%act.length].italiano)+'</q>':'Nessun consiglio attivo: la sezione resterà vuota.';
+  }
+  function renderTips(){
+    $('tips').innerHTML=state.Consigli.map(function(r,i){
+      return '<div class="card item'+(on(r.attivo)?'':' off')+'" data-i="'+i+'">'+
+        '<div class="itemhead"><span class="tag">Consiglio '+(i+1)+'</span><div style="display:flex;gap:14px;align-items:center">'+
+        '<label class="switch"><input type="checkbox" data-k="attivo"'+(on(r.attivo)?' checked':'')+'> Attivo</label>'+
+        '<button class="del" data-del>Elimina</button></div></div>'+
+        '<label class="f">Italiano<textarea class="in" data-k="italiano" id="tip-it-'+i+'">'+esc(r.italiano)+'</textarea></label>'+
+        '<label class="f">Inglese<textarea class="in" data-k="inglese" id="tip-en-'+i+'">'+esc(r.inglese)+'</textarea></label></div>';
+    }).join('');
+    renderToday();
+  }
+  function bindList(box,key,rerender){
+    box.addEventListener('input',function(e){
+      var it=e.target.closest('[data-i]'),k=e.target.dataset.k;if(!it||!k)return;
+      var row=state[key][+it.dataset.i];
+      row[k]=e.target.type==='checkbox'?(e.target.checked?'SI':'NO'):e.target.value;
+      if(e.target.type==='checkbox')it.classList.toggle('off',!e.target.checked);
+      if(key==='Consigli')renderToday();
+      setDirty(true);
+    });
+    box.addEventListener('click',function(e){
+      if(!e.target.hasAttribute('data-del'))return;
+      var it=e.target.closest('[data-i]');
+      if(!e.target.dataset.sure){e.target.dataset.sure='1';e.target.textContent='Conferma eliminazione';return}
+      state[key].splice(+it.dataset.i,1);rerender();setDirty(true);
+    });
+  }
+  bindList($('tips'),'Consigli',renderTips);
+  $('add-tip').addEventListener('click',function(){state.Consigli.push({attivo:'SI',italiano:'',inglese:''});renderTips();setDirty(true);
+    var n=state.Consigli.length-1;$('tip-it-'+n).focus()});
+
+  // ---- Numeri
+  function renderNums(){
+    $('nums').innerHTML=state.Numeri.map(function(r,i){
+      return '<div class="card item'+(on(r.attivo)?'':' off')+'" data-i="'+i+'">'+
+        '<div class="itemhead"><span class="tag">'+esc(r.nome_it||'Nuovo numero')+'</span><div style="display:flex;gap:14px;align-items:center">'+
+        '<label class="switch"><input type="checkbox" data-k="attivo"'+(on(r.attivo)?' checked':'')+'> Attivo</label>'+
+        '<button class="del" data-del>Elimina</button></div></div>'+
+        '<div class="three"><label class="f">Nome<input class="in" data-k="nome_it" id="num-it-'+i+'" value="'+esc(r.nome_it)+'"></label>'+
+        '<label class="f">Nome in inglese<input class="in" data-k="nome_en" value="'+esc(r.nome_en)+'"></label>'+
+        '<label class="f">Numero<input class="in" data-k="numero" inputmode="tel" value="'+esc(r.numero)+'"></label></div></div>';
+    }).join('');
+  }
+  bindList($('nums'),'Numeri',renderNums);
+  $('add-num').addEventListener('click',function(){state.Numeri.push({attivo:'SI',nome_it:'',nome_en:'',numero:''});renderNums();setDirty(true);
+    $('num-it-'+(state.Numeri.length-1)).focus()});
+
+  // ---- Casa
+  function renderInfo(){
+    $('info').innerHTML=INFO.map(function(k){
+      var r=state.Info.filter(function(x){return x.chiave===k[0]})[0];
+      return '<div class="card item" data-key="'+k[0]+'"><span class="tag">'+k[1]+'</span>'+
+        '<label class="f">Italiano<textarea class="in" data-k="italiano" placeholder="'+esc(k[2])+'">'+esc(r.italiano)+'</textarea></label>'+
+        '<label class="f">Inglese<textarea class="in" data-k="inglese">'+esc(r.inglese)+'</textarea></label></div>';
+    }).join('');
+  }
+  $('info').addEventListener('input',function(e){
+    var it=e.target.closest('[data-key]'),k=e.target.dataset.k;if(!it||!k)return;
+    state.Info.filter(function(x){return x.chiave===it.dataset.key})[0][k]=e.target.value;setDirty(true);
+  });
+
+  // ---- Salvataggio
+  $('save').addEventListener('click',function(){
+    var b=this;b.textContent='Salvataggio…';b.disabled=true;
+    call('save',state).then(function(){setDirty(false);toast('Salvato. La guida si aggiorna entro 5 minuti.')})
+      .catch(function(err){toast(err.message==='Failed to fetch'?'Non salvato: controlla la connessione.':'Non salvato: '+err.message,true)})
+      .then(function(){b.textContent='Salva modifiche';b.disabled=false});
+  });
+  window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+
+  // ---- Link ospite
+  var gn=$('g-n'),ga=$('g-a'),gp=$('g-p'),gl=$('g-l'),gw=$('g-w');
+  gw.value=ls('cc-host-wifi')||'';
+  function gen(){
+    ls('cc-host-wifi',gw.value);
+    var out=$('g-out'),wa=$('g-wa'),op=$('g-open');
+    var okd=ga.value&&gp.value&&gp.value>ga.value;
+    wa.setAttribute('aria-disabled',!okd);op.setAttribute('aria-disabled',!okd);
+    if(!okd){out.textContent=ga.value&&gp.value?'La partenza deve essere dopo l\'arrivo.':'Compila arrivo e partenza.';wa.removeAttribute('href');op.removeAttribute('href');return ''}
+    var p=new URLSearchParams(),nm=gn.value.trim();
+    if(nm)p.set('n',nm);p.set('a',ga.value);p.set('p',gp.value);p.set('l',gl.value);if(gw.value.trim())p.set('w',gw.value.trim());
+    var link=SITE+'?'+p.toString();
+    out.textContent=link;
+    var msg=gl.value==='en'
+      ?'Hi'+(nm?' '+nm:'')+'! Here is your guide for your stay at Corricella House: '+link+'\nSee you soon in Procida, Lucia'
+      :'Ciao'+(nm?' '+nm:'')+'! Ecco la guida per il vostro soggiorno a Corricella House: '+link+'\nA presto a Procida, Lucia';
+    wa.href='https://wa.me/?text='+encodeURIComponent(msg);op.href=link;
+    return link;
+  }
+  [gn,ga,gp,gl,gw].forEach(function(el){el.addEventListener('input',gen);el.addEventListener('change',gen)});
+  $('gen').addEventListener('submit',function(e){e.preventDefault()});
+  $('g-copy').addEventListener('click',function(){
+    var l=gen(),b=this;if(!l)return;
+    if(navigator.clipboard)navigator.clipboard.writeText(l).then(function(){b.textContent='Copiato';setTimeout(function(){b.textContent='Copia link'},2000)},function(){});
+  });
+  try{var q=qrcode(0,'M');q.addData(SITE);q.make();$('qr').innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
+
+  // ---- Avvio
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){})}
+  var saved=ls('cc-pin');
+  if(saved&&API){pin=saved;call('load').then(function(j){start(j.data)}).catch(function(){ls('cc-pin',null)})}
+})();
+</script>
+</body>
+</html>
