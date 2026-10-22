@@ -138,7 +138,7 @@ textarea.in{resize:vertical;min-height:84px}
           <label class="f">Partenza<input class="in" type="date" id="g-p"></label>
         </div>
         <div class="two">
-          <label class="f">Lingua<select class="in" id="g-l"><option value="it">Italiano</option><option value="en">English</option></select></label>
+          <label class="f">Lingua<select class="in" id="g-l"><option value="it">Italiano</option><option value="en">English</option><option value="fr">Français</option></select></label>
           <label class="f">Password Wi-Fi<input class="in" id="g-w" placeholder="resta solo su questo tablet"></label>
         </div>
         <div class="out" id="g-out">Compila arrivo e partenza.</div>
@@ -158,7 +158,7 @@ textarea.in{resize:vertical;min-height:84px}
     <!-- Consigli -->
     <section data-sec="consigli" hidden>
       <h2>I consigli di Lucia</h2>
-      <p class="lead">La guida ne mostra uno al giorno, a rotazione, tra quelli attivi. L'inglese si può lasciare vuoto.</p>
+      <p class="lead">La guida ne mostra uno al giorno, a rotazione, tra quelli attivi. Inglese e francese si possono lasciare vuoti: la guida mostra la lingua disponibile.</p>
       <div class="today" id="today"></div>
       <div class="stack" id="tips" style="margin-top:14px"></div>
       <button class="add" id="add-tip" style="margin-top:12px">+ Aggiungi un consiglio</button>
@@ -228,7 +228,7 @@ textarea.in{resize:vertical;min-height:84px}
 
   function start(data){
     state={Consigli:data.Consigli||[],Numeri:data.Numeri||[],Info:data.Info||[]};
-    INFO.forEach(function(k){if(!state.Info.some(function(r){return r.chiave===k[0]}))state.Info.push({chiave:k[0],italiano:'',inglese:''})});
+    INFO.forEach(function(k){if(!state.Info.some(function(r){return r.chiave===k[0]}))state.Info.push({chiave:k[0],italiano:'',inglese:'',francese:''})});
     $('login').hidden=true;$('app').hidden=false;
     renderTips();renderNums();renderInfo();setDirty(false);
     go(ls('cc-sec')||'ospiti');
@@ -255,7 +255,8 @@ textarea.in{resize:vertical;min-height:84px}
         '<label class="switch"><input type="checkbox" data-k="attivo"'+(on(r.attivo)?' checked':'')+'> Attivo</label>'+
         '<button class="del" data-del>Elimina</button></div></div>'+
         '<label class="f">Italiano<textarea class="in" data-k="italiano" id="tip-it-'+i+'">'+esc(r.italiano)+'</textarea></label>'+
-        '<label class="f">Inglese<textarea class="in" data-k="inglese" id="tip-en-'+i+'">'+esc(r.inglese)+'</textarea></label></div>';
+        '<div class="two"><label class="f">Inglese<textarea class="in" data-k="inglese" id="tip-en-'+i+'">'+esc(r.inglese)+'</textarea></label>'+
+        '<label class="f">Francese<textarea class="in" data-k="francese">'+esc(r.francese)+'</textarea></label></div></div>';
     }).join('');
     renderToday();
   }
@@ -276,7 +277,7 @@ textarea.in{resize:vertical;min-height:84px}
     });
   }
   bindList($('tips'),'Consigli',renderTips);
-  $('add-tip').addEventListener('click',function(){state.Consigli.push({attivo:'SI',italiano:'',inglese:''});renderTips();setDirty(true);
+  $('add-tip').addEventListener('click',function(){state.Consigli.push({attivo:'SI',italiano:'',inglese:'',francese:''});renderTips();setDirty(true);
     var n=state.Consigli.length-1;$('tip-it-'+n).focus()});
 
   // ---- Numeri
@@ -286,13 +287,14 @@ textarea.in{resize:vertical;min-height:84px}
         '<div class="itemhead"><span class="tag">'+esc(r.nome_it||'Nuovo numero')+'</span><div style="display:flex;gap:14px;align-items:center">'+
         '<label class="switch"><input type="checkbox" data-k="attivo"'+(on(r.attivo)?' checked':'')+'> Attivo</label>'+
         '<button class="del" data-del>Elimina</button></div></div>'+
-        '<div class="three"><label class="f">Nome<input class="in" data-k="nome_it" id="num-it-'+i+'" value="'+esc(r.nome_it)+'"></label>'+
-        '<label class="f">Nome in inglese<input class="in" data-k="nome_en" value="'+esc(r.nome_en)+'"></label>'+
-        '<label class="f">Numero<input class="in" data-k="numero" inputmode="tel" value="'+esc(r.numero)+'"></label></div></div>';
+        '<div class="two"><label class="f">Nome<input class="in" data-k="nome_it" id="num-it-'+i+'" value="'+esc(r.nome_it)+'"></label>'+
+        '<label class="f">Numero<input class="in" data-k="numero" inputmode="tel" value="'+esc(r.numero)+'"></label></div>'+
+        '<div class="two"><label class="f">Nome in inglese<input class="in" data-k="nome_en" value="'+esc(r.nome_en)+'"></label>'+
+        '<label class="f">Nome in francese<input class="in" data-k="nome_fr" value="'+esc(r.nome_fr)+'"></label></div></div>';
     }).join('');
   }
   bindList($('nums'),'Numeri',renderNums);
-  $('add-num').addEventListener('click',function(){state.Numeri.push({attivo:'SI',nome_it:'',nome_en:'',numero:''});renderNums();setDirty(true);
+  $('add-num').addEventListener('click',function(){state.Numeri.push({attivo:'SI',nome_it:'',nome_en:'',numero:'',nome_fr:''});renderNums();setDirty(true);
     $('num-it-'+(state.Numeri.length-1)).focus()});
 
   // ---- Casa
@@ -301,7 +303,8 @@ textarea.in{resize:vertical;min-height:84px}
       var r=state.Info.filter(function(x){return x.chiave===k[0]})[0];
       return '<div class="card item" data-key="'+k[0]+'"><span class="tag">'+k[1]+'</span>'+
         '<label class="f">Italiano<textarea class="in" data-k="italiano" placeholder="'+esc(k[2])+'">'+esc(r.italiano)+'</textarea></label>'+
-        '<label class="f">Inglese<textarea class="in" data-k="inglese">'+esc(r.inglese)+'</textarea></label></div>';
+        '<div class="two"><label class="f">Inglese<textarea class="in" data-k="inglese">'+esc(r.inglese)+'</textarea></label>'+
+        '<label class="f">Francese<textarea class="in" data-k="francese">'+esc(r.francese)+'</textarea></label></div></div>';
     }).join('');
   }
   $('info').addEventListener('input',function(e){
@@ -331,9 +334,10 @@ textarea.in{resize:vertical;min-height:84px}
     if(nm)p.set('n',nm);p.set('a',ga.value);p.set('p',gp.value);p.set('l',gl.value);if(gw.value.trim())p.set('w',gw.value.trim());
     var link=SITE+'?'+p.toString();
     out.textContent=link;
-    var msg=gl.value==='en'
-      ?'Hi'+(nm?' '+nm:'')+'! Here is your guide for your stay at Corricella House: '+link+'\nSee you soon in Procida, Lucia'
-      :'Ciao'+(nm?' '+nm:'')+'! Ecco la guida per il vostro soggiorno a Corricella House: '+link+'\nA presto a Procida, Lucia';
+    var msg={
+      en:'Hi'+(nm?' '+nm:'')+'! Here is your guide for your stay at Corricella House: '+link+'\nSee you soon in Procida, Lucia',
+      fr:'Bonjour'+(nm?' '+nm:'')+' ! Voici le guide de votre séjour à Corricella House : '+link+'\nÀ bientôt à Procida, Lucia',
+      it:'Ciao'+(nm?' '+nm:'')+'! Ecco la guida per il vostro soggiorno a Corricella House: '+link+'\nA presto a Procida, Lucia'}[gl.value];
     wa.href='https://wa.me/?text='+encodeURIComponent(msg);op.href=link;
     return link;
   }
