@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Corricella House · Guida ospiti</title>
+<meta name="description" content="La guida per gli ospiti di Corricella House, Marina Corricella, Procida.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+/* Layout: colonna unica da telefono; nastro di facciate pastello in testa; la "fase" del viaggio decide cosa si vede */
+:root{
+  --bg:#f3f6f8; --surface:#ffffff; --ink:#14283a; --muted:#5b6b7a; --line:#d9e1e8;
+  --sea:#0f5c8c; --sea-soft:#e2eef6; --rosa:#e9a6a1; --giallo:#f1cf6b; --ocra:#d99a52; --celeste:#8fc3de; --menta:#9fcdb8;
+  --warn:#b5651d;
+  --f-display:"Gloock", Georgia, "Times New Roman", serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1822; --surface:#13222f; --ink:#e7eef4; --muted:#9db0c0; --line:#24384a;
+  --sea:#6fb6e3; --sea-soft:#163247; --warn:#e7a465; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1822; --surface:#13222f; --ink:#e7eef4; --muted:#9db0c0; --line:#24384a;
+  --sea:#6fb6e3; --sea-soft:#163247; --warn:#e7a465; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.facades{display:flex;height:14px}
+.facades span{flex:1}
+.facades span:nth-child(5n+1){background:var(--rosa)} .facades span:nth-child(5n+2){background:var(--giallo)}
+.facades span:nth-child(5n+3){background:var(--celeste)} .facades span:nth-child(5n+4){background:var(--ocra)}
+.facades span:nth-child(5n+5){background:var(--menta)}
+
+header.top{padding-block:24px 8px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.house{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+.lang button{font:inherit;font-size:13px;font-weight:700;border:0;background:var(--surface);color:var(--muted);padding:5px 11px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,9vw,46px);line-height:1.05;margin:6px 0 8px;text-wrap:balance}
+.stay{color:var(--muted);font-size:15px}
+.stay b{color:var(--ink);font-weight:600}
+
+.demo{margin-top:18px;background:var(--sea-soft);border-radius:14px;padding:12px}
+.demo-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sea);font-weight:700;margin-bottom:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sea);border-color:var(--sea);color:var(--surface)}
+.chip:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--giallo);outline-offset:2px}
+
+section.phase{display:flex;flex-direction:column;gap:22px;margin-top:26px}
+.phase-title{display:none;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--sea);border-top:2px solid var(--sea);padding-top:10px}
+body.all .phase-title{display:block}
+.moment{font-family:var(--f-display);font-size:26px;line-height:1.15;margin:0;text-wrap:balance}
+.lead{margin:6px 0 0;color:var(--muted)}
+h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700}
+.block{display:flex;flex-direction:column}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.todo{color:var(--warn);font-weight:600}
+
+.count{display:flex;align-items:baseline;gap:12px}
+.count .n{font-family:var(--f-display);font-size:72px;line-height:1;color:var(--sea);font-variant-numeric:tabular-nums}
+.count .t{font-size:17px}
+
+.routes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;padding-block:10px;border-top:1px dashed var(--line)}
+.steps li:first-child{border-top:0}
+.steps .dot{width:28px;height:28px;border-radius:50%;background:var(--sea-soft);color:var(--sea);display:grid;place-items:center;font-weight:700;font-size:13px}
+.steps .tx{min-width:0}
+.steps small{color:var(--muted);display:block}
+
+.check{display:flex;gap:10px;align-items:flex-start;padding-block:8px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--sea);margin-top:2px;flex:none}
+
+.ticket{display:grid;grid-template-columns:1fr auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ticket .main{padding:16px;min-width:0}
+.ticket .stub{padding:16px;border-left:2px dashed var(--line);display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:96px;background:var(--sea-soft)}
+.route{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;flex-wrap:wrap}
+.route .arrow{color:var(--sea)}
+.meta{color:var(--muted);font-size:14px;margin-top:4px}
+.time{font-family:var(--f-mono);font-size:26px;color:var(--sea);font-variant-numeric:tabular-nums}
+.stub small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.links a{font-size:14px;font-weight:600;color:var(--sea);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+
+.btn{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:14px;padding:14px 16px;background:var(--sea);color:var(--surface);cursor:pointer;width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;text-decoration:none}
+.btn.ghost{background:var(--surface);color:var(--sea);border:1px solid var(--line)}
+
+.ph{aspect-ratio:4/3;max-width:100%;border-radius:12px;background:repeating-linear-gradient(135deg,var(--sea-soft) 0 12px,transparent 12px 24px),var(--surface);border:1px dashed var(--line);display:grid;place-items:center;color:var(--muted);font-size:13px;margin-top:8px}
+
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.tip q{font-family:var(--f-display);font-size:21px;line-height:1.3;display:block;quotes:"«" "»"}
+.tip .sig{color:var(--muted);font-size:14px;margin-top:10px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.fact .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.fact .v{font-family:var(--f-mono);font-size:24px;margin-top:4px;font-variant-numeric:tabular-nums}
+.fact .s{font-size:13px;color:var(--muted)}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;justify-content:space-between;gap:12px;padding-block:10px;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0}
+.list .d{font-family:var(--f-mono);color:var(--muted);font-size:14px;white-space:nowrap}
+.code{font-family:var(--f-mono);font-size:22px;letter-spacing:.08em;background:var(--sea-soft);color:var(--sea);border-radius:10px;padding:10px 14px;display:inline-block;margin-top:8px}
+
+/* QR per la casa */
+.host{margin-top:36px;border:2px dashed var(--line);border-radius:18px;padding:18px}
+.host-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);font-weight:700}
+.qrcard{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:12px;background:#fff;color:#14283a;border-radius:14px;padding:14px}
+.qrcard .q{width:116px;height:116px;max-width:100%}
+.qrcard .q svg{width:100%;height:100%;display:block}
+.qrcard .qt{font-family:var(--f-display);font-size:20px;line-height:1.15}
+.qrcard .qs{font-size:13px;color:#5b6b7a;margin-top:4px}
+.url{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-top:10px;word-break:break-all}
+
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.hero{margin-top:16px;border-radius:16px;overflow:hidden;position:relative}
+.hero img{display:block;width:100%;aspect-ratio:16/7;object-fit:cover;max-width:100%}
+.hero figcaption{position:absolute;left:10px;bottom:10px;background:rgba(20,40,58,.72);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.photo{display:block;width:100%;max-width:100%;border-radius:12px;margin-top:8px;object-fit:cover}
+.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.gallery figure{margin:0;flex:0 0 72%;scroll-snap-align:start}
+.gallery img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:12px;display:block}
+.gallery figcaption{font-size:13px;color:var(--muted);margin-top:4px}
+.wifi{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center}
+.wifi .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.wifi .v{font-family:var(--f-mono);font-size:18px;word-break:break-all}
+.app{display:flex;flex-direction:column;gap:10px}
+.app .stores{display:flex;gap:8px;flex-wrap:wrap}
+.app .stores a{font-weight:700;font-size:15px;text-decoration:none;color:var(--surface);background:var(--ink);border-radius:12px;padding:10px 14px}
+.walk{display:flex;flex-direction:column;gap:10px}
+.wk-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.wk-n{font-family:var(--f-mono);font-size:14px;color:var(--sea)}
+.wk-turn{font-weight:700;font-size:14px;background:var(--giallo);color:#1b1a14;border-radius:999px;padding:4px 12px}
+.wk-frame{border-radius:12px;overflow:hidden;background:var(--sea-soft)}
+.wk-frame img{display:block;width:100%;max-width:100%;aspect-ratio:4/3;object-fit:cover}
+.wk-ph{aspect-ratio:4/3;margin:0;border-radius:0}
+.wk-tx{margin:0;font-size:17px;min-height:3em}
+.wk-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wk-nav .chip:disabled{opacity:.35;cursor:default}
+.wk-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.wk-dots button{width:9px;height:9px;padding:0;border-radius:50%;border:0;background:var(--line);cursor:pointer}
+.wk-dots button[aria-current="true"]{background:var(--sea);width:22px;border-radius:5px}
+.app .head{display:flex;gap:12px;align-items:center}
+.app .head img{width:56px;height:56px;border-radius:13px;flex:none;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.app .head p{margin:0;min-width:0}
+.app ul{margin:0;padding-left:18px;color:var(--muted)}
+.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+footer{margin-top:24px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+.taxi{position:fixed;inset:0;z-index:20;background:var(--giallo);color:#1b1a14;display:flex;flex-direction:column;justify-content:center;gap:18px;
+  padding:calc(24px + env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px))}
+.taxi .lbl{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.taxi .big{font-family:var(--f-display);font-size:clamp(34px,10vw,56px);line-height:1.05}
+.taxi .sub{font-size:20px}
+.taxi .alt{font-size:15px;opacity:.75}
+.taxi button{align-self:flex-start;font:inherit;font-weight:700;border:2px solid #1b1a14;background:transparent;color:#1b1a14;border-radius:999px;padding:10px 18px;cursor:pointer}
+
+@media print{.demo,.lang,.host,#open-taxi,.taxi,.routes{display:none!important}section.phase{display:flex!important}.phase-title{display:block!important}.card,.ticket,.tip,.fact{break-inside:avoid}}
+@media (prefers-reduced-motion:no-preference){section.phase{animation:in .35s ease both}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+.form{display:grid;gap:10px;margin-top:12px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.form input,.form select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form .row>*{min-width:0}
+.form input,.form select{width:100%;min-width:0}
+.out{font-family:var(--f-mono);font-size:13px;word-break:break-all;background:var(--sea-soft);border-radius:10px;padding:10px;color:var(--ink)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+a.chip{text-decoration:none;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="facades" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="wrap">
+  <header class="top">
+    <div class="topline">
+      <div class="brand"><img src="img/logo.jpg" alt="Logo Corricella House"><div class="house">Corricella House · Procida</div></div>
+      <div class="lang" role="group" aria-label="Lingua / Language">
+        <button data-l="it" id="l-it">IT</button><button data-l="en" id="l-en">EN</button>
+      </div>
+    </div>
+    <h1 data-t="hello"></h1>
+    <div class="stay" id="stay"></div>
+    <figure class="hero" style="margin-inline:0;margin-bottom:0"><img src="img/vista.jpg" alt="La Corricella vista dalla casa"><figcaption data-t="hero_cap"></figcaption></figure>
+    <div class="demo" id="demo" hidden>
+      <div class="demo-label" data-t="demo"></div>
+      <div class="chips" role="group">
+        <button class="chip" data-p="prima" id="c-prima" data-t="c_prima"></button>
+        <button class="chip" data-p="arrivo" id="c-arrivo" data-t="c_arrivo"></button>
+        <button class="chip" data-p="durante" id="c-durante" data-t="c_durante"></button>
+        <button class="chip" data-p="partenza" id="c-partenza" data-t="c_partenza"></button>
+        <button class="chip" data-p="all" id="c-all" data-t="c_all"></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="phase" data-phase="prima">
+    <div class="phase-title" data-t="c_prima"></div>
+    <div>
+      <p class="moment" data-t="p_moment"></p>
+      <div class="count card" id="count" style="margin-top:12px"><span class="n" id="days">7</span><span class="t"><span data-t="p_days"></span><br><small class="note" style="margin:0" data-t="checkin"></small></span></div>
+    </div>
+    <div class="block">
+      <h3 data-t="p_how"></h3>
+      <div class="routes" role="group">
+        <button class="chip" data-r="aero" id="r-aero" data-t="r_aero"></button>
+        <button class="chip" data-r="staz" id="r-staz" data-t="r_staz"></button>
+        <button class="chip" data-r="pozz" id="r-pozz" data-t="r_pozz"></button>
+      </div>
+      <div class="card"><ol class="steps" id="route"></ol></div>
+    </div>
+    <div class="block">
+      <h3 data-t="app_h"></h3>
+      <div class="card app">
+        <div class="head"><img src="img/procida-app.png" alt="Icona app Procida Island"><p data-t="app_t"></p></div>
+        <ul><li data-t="app_l1"></li><li data-t="app_l2"></li><li data-t="app_l3"></li></ul>
+        <div class="stores">
+          <a class="st-ios" href="https://apps.apple.com/it/app/procida-island/id1332706371" target="_blank" rel="noopener">App Store</a>
+          <a class="st-and" href="https://play.google.com/store/apps/details?id=it.webapp.procidaisland" target="_blank" rel="noopener">Google Play</a>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <h3 data-t="p_pack"></h3>
+      <div class="card" id="pack">
+        <label class="check"><input type="checkbox" id="k1"><span data-t="k1"></span></label>
+        <label class="check"><input type="checkbox" id="k2"><span data-t="k2"></span></label>
+        <label class="check"><input type="checkbox" id="k3"><span data-t="k3"></span></label>
+        <label class="check"><input type="checkbox" id="k4"><span data-t="k4"></span></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" data-phase="arrivo" hidden>
+    <div class="phase-title" data-t="c_arrivo"></div>
+    <div>
+      <p class="moment" data-t="a_moment"></p>
+      <p class="lead" data-t="a_lead"></p>
+    </div>
+    <div class="block">
+      <h3 data-t="a_next"></h3>
+      <div class="ticket">
+        <div class="main">
+          <div class="route">Napoli Beverello <span class="arrow">→</span> Procida</div>
+          <div class="meta" data-t="a_meta"></div>
+        </div>
+        
+      </div>
+      <div class="links">
+        <a href="https://www.caremar.it" target="_blank" rel="noopener">Caremar</a>
+        <a href="https://www.snav.it" target="_blank" rel="noopener">SNAV</a>
+        <a href="https://www.medmar.it" target="_blank" rel="noopener">Medmar</a>
+      </div>
+      <p class="note" data-t="a_note"></p>
+    </div>
+    <button class="btn" id="open-taxi"><span data-t="a_taxi"></span><span>→</span></button>
+    <div class="block">
+      <h3 data-t="a_walk"></h3>
+      <div class="card walk">
+        <div class="wk-top"><span class="wk-n" id="wk-n"></span><span class="wk-turn" id="wk-turn" hidden></span></div>
+        <div class="wk-frame"><img id="wk-img" alt=""><div class="ph wk-ph" id="wk-ph" hidden></div></div>
+        <p class="wk-tx" id="wk-tx"></p>
+        <small class="note" id="wk-src"></small>
+        <div class="wk-nav">
+          <button class="chip" id="wk-prev"></button>
+          <div class="wk-dots" id="wk-dots"></div>
+          <button class="chip" id="wk-next"></button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 data-t="a_lost"></h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span class="code" style="margin:0;font-size:18px" id="phone">+39 338 222 0157</span>
+        <button class="chip" id="copy-phone" data-t="copy"></button>
+        <a class="chip" id="wa-link" href="https://wa.me/393382220157" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+      <p class="note" data-t="a_wa"></p>
+    </div>
+    <div class="card" id="keys-in-card" hidden>
+      <h3 data-t="k_in"></h3>
+      <p style="margin:0" id="keys-in"></p>
+    </div>
+  </section>
+
+  <section class="phase" data-phase="durante" hidden>
+    <div class="phase-title" data-t="c_durante"></div>
+    <div class="tip">
+      <h3 data-t="d_tip"></h3>
+      <q id="tip"></q>
+      <div class="sig" data-t="d_sig"></div>
+    </div>
+    <div class="card app">
+      <div class="head"><img src="img/procida-app.png" alt="Icona app Procida Island"><p data-t="app_d"></p></div>
+      <div class="stores">
+        <a class="st-ios" href="https://apps.apple.com/it/app/procida-island/id1332706371" target="_blank" rel="noopener">App Store</a>
+        <a class="st-and" href="https://play.google.com/store/apps/details?id=it.webapp.procidaisland" target="_blank" rel="noopener">Google Play</a>
+      </div>
+    </div>
+    <div class="card" id="wifi-card" hidden>
+      <h3>Wi-Fi</h3>
+      <div class="wifi">
+        <div><div class="k" data-t="wf_net"></div><div class="v">CASA TERESA</div></div><span></span>
+        <div><div class="k">Password</div><div class="v" id="wpass"></div></div>
+        <button class="chip" id="copy-wifi" data-t="copy_pw"></button>
+      </div>
+    </div>
+    <div class="facts">
+      <div class="fact"><div class="k" data-t="d_sun"></div><div class="v" id="sunset">--:--</div><div class="s" data-t="d_suns"></div></div>
+      <a class="fact" href="https://www.ilmeteo.it/meteo/Procida" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="k" data-t="d_meteo"></div><div class="v" style="color:var(--sea)">›</div><div class="s" data-t="d_meteos"></div></a>
+    </div>
+    <div class="block">
+      <h3 data-t="d_beach"></h3>
+      <div class="card"><ul class="list">
+        <li><span data-t="b1"></span><span class="d">550 m</span></li>
+        <li><span data-t="b2"></span><span class="d">750 m</span></li>
+        <li><span>Chiaiolella</span><span class="d" data-t="b3d"></span></li>
+      </ul></div>
+    </div>
+    <div class="block">
+      <h3 data-t="d_house"></h3>
+      <div class="gallery">
+        <figure><img src="img/soggiorno.jpg" alt=""><figcaption data-t="g1"></figcaption></figure>
+        <figure><img src="img/cucina.jpg" alt=""><figcaption data-t="g2"></figcaption></figure>
+        <figure><img src="img/camera.jpg" alt=""><figcaption data-t="g3"></figcaption></figure>
+        <figure><img src="img/bagno.jpg" alt=""><figcaption data-t="g4"></figcaption></figure>
+      </div>
+    </div>
+    <div class="block">
+      <h3 data-t="d_rules"></h3>
+      <div class="card"><ul class="rules">
+        <li data-t="ru1"></li><li data-t="ru2"></li><li data-t="ru3"></li><li data-t="ru4"></li><li data-t="ru5"></li>
+      </ul></div>
+    </div>
+    <div class="block">
+      <h3 data-t="d_num"></h3>
+      <div class="card"><ul class="list" id="nums"></ul></div>
+    </div>
+  </section>
+
+  <section class="phase" data-phase="partenza" hidden>
+    <div class="phase-title" data-t="c_partenza"></div>
+    <div>
+      <p class="moment" data-t="x_moment"></p>
+      <p class="lead"><span data-t="x_lead"></span> <span id="keys-out"></span></p>
+    </div>
+    <div class="block">
+      <h3 data-t="x_back"></h3>
+      <div class="ticket">
+        <div class="main">
+          <div class="route">Procida <span class="arrow">→</span> Napoli Beverello</div>
+          <div class="meta" data-t="x_meta"></div>
+        </div>
+        
+      </div>
+      <div class="links">
+        <a href="https://www.caremar.it" target="_blank" rel="noopener">Caremar</a>
+        <a href="https://www.snav.it" target="_blank" rel="noopener">SNAV</a>
+        <a href="https://www.medmar.it" target="_blank" rel="noopener">Medmar</a>
+      </div>
+      <p class="note" data-t="x_note"></p>
+    </div>
+    <div class="card">
+      <h3 data-t="x_ret"></h3>
+      <p style="margin:0" data-t="x_rett"></p>
+      <span class="code">BENTORNATI</span>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <a class="btn" id="book-link" href="https://wa.me/393382220157" target="_blank" rel="noopener"><span data-t="x_book"></span><span>→</span></a>
+        <a class="btn ghost" href="https://www.booking.com/Share-ebVLSB" target="_blank" rel="noopener"><span data-t="x_rev"></span><span>→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="host" id="host" hidden>
+    <div class="host-label">Area host · solo per Lucia</div>
+    <h3 style="margin-top:10px">Crea il link per un ospite</h3>
+    <form class="form" id="gen" autocomplete="off">
+      <label>Nome dell'ospite<input id="g-n" placeholder="es. Anna"></label>
+      <div class="row">
+        <label>Arrivo<input type="date" id="g-a" required></label>
+        <label>Partenza<input type="date" id="g-p" required></label>
+      </div>
+      <div class="row">
+        <label>Lingua<select id="g-l"><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <label>Password Wi-Fi<input id="g-w" placeholder="resta solo sul tuo telefono"></label>
+      </div>
+      <div class="out" id="g-out">Compila arrivo e partenza.</div>
+      <div class="acts">
+        <button type="button" class="chip" id="g-copy">Copia link</button>
+        <a class="chip" id="g-wa" href="#" target="_blank" rel="noopener">Invia su WhatsApp</a>
+        <a class="chip" id="g-open" href="#" target="_blank" rel="noopener">Apri anteprima</a>
+      </div>
+      <p class="note" style="margin:0">La password del Wi-Fi viaggia solo dentro il link dell'ospite: non è scritta nel sito.</p>
+    </form>
+    <h3 style="margin-top:22px">QR da stampare</h3>
+    <div class="qrcard">
+      <div class="q" id="qr" aria-label="QR code della guida"></div>
+      <div><div class="qt">Benvenuti a Corricella House</div><div class="qs">Inquadrate il codice per la guida della casa · Scan for the house guide</div></div>
+    </div>
+    <div class="url" id="qrurl"></div>
+    <p class="note">Il QR apre la guida completa, senza Wi-Fi e senza dati personali.</p>
+  </div>
+
+  <footer>Corricella House · Via Marina Corricella 58, Procida · CIN IT063061C24ESE3E14</footer>
+</div>
+
+<div class="taxi" id="taxi" hidden role="dialog">
+  <div class="lbl">Per favore, ci porti a</div>
+  <div class="big">San Rocco</div>
+  <div class="sub">Procida · alla chiesetta, dobbiamo scendere alla Corricella</div>
+  <div class="alt" data-t="t_hint"></div>
+  <button id="close-taxi" data-t="close"></button>
+</div>
+
+<script>
+(function(){
+  var T={
+  it:{hello:'Ciao',hello0:'Benvenuti a Procida',demo:'Anteprima · simula il giorno',c_prima:'Una settimana prima',c_arrivo:"Giorno d'arrivo",c_durante:'Durante',c_partenza:'Ultimo giorno',c_all:'Guida completa',
+    stay:'Il vostro soggiorno',nights:'notti',night:'notte',p_moment:'Procida vi aspetta.',p_days:"giorni all'arrivo.",checkin:'Check-in dalle 12:00',p_how:'Come arrivare al porto',
+    r_aero:'Aeroporto',r_staz:'Stazione Centrale',r_pozz:'Pozzuoli',p_pack:'In valigia',
+    k1:'Bagaglio leggero o zaino: alla Corricella si arriva a piedi, con qualche scalino.',k2:'Scarpe comode per salite e scale, e un paio da scoglio.',k3:'Telo mare: le spiagge vicine sono libere.',k4:"Documento d'identità per il check-in.",
+    a_moment:'Oggi si arriva.',a_lead:'Quando siete al porto di Napoli, qui sotto trovate tutto in ordine.',a_next:'Napoli → Procida',a_meta:'Aliscafo circa 40 minuti, traghetto circa un\'ora · sbarco a Marina Grande',
+    a_note:'Gli orari cambiano con la stagione: controllate sempre sul sito della compagnia prima di partire.',a_taxi:'Mostra al tassista',a_walk:"L'ultimo tratto a piedi",
+    walk:['Siete a San Rocco: fermata del bus, chiesetta e tabaccheria con il pesce spada disegnato sul muro. Da qui si va solo a piedi.',
+      'Seguite il cartello marrone "Marina Corricella" e imboccate la discesa tra le case rosa.',
+      "Continuate a scendere: passate accanto all'edicola con l'immagine della Madonna e sotto gli archi.",
+      'In fondo si apre il porticciolo: siete alla Marina di Corricella.',
+      'Camminate lungo la banchina, con le barche dei pescatori alla vostra destra.',
+      "Proseguite sul lungomare, passando accanto alla casa rosa con l'arco.",
+      'Continuate tra i tavolini dei ristoranti, sotto la chiesa gialla.',
+      'Via Marina Corricella 58, secondo piano: benvenuti a casa!'],
+    wk_step:'Passo',wk_of:'di',wk_left:'← Qui girate a sinistra',wk_prev:'← Indietro',wk_next:'Avanti →',wk_src:'Immagine: Google Street View',wk_pend:'Foto del portone in arrivo',
+    a_lost:'Siete in ritardo o vi siete persi?',copy:'Copia numero',copied:'Copiato',a_wa:'Scrivete a Lucia su WhatsApp, vi risponde lei.',
+    app_h:'Organizzate il soggiorno',app_t:"Scaricate l'app Procida Island prima di partire: i nostri ospiti la usano per pianificare le giornate e prenotare in anticipo.",app_l1:'Escursioni e giri in barca',app_l2:'Ristoranti e spiagge attrezzate',app_l3:'Orari di traghetti e autobus, mappe e servizi',app_d:"Per tutto il resto dell'isola, aprite l'app Procida Island.",
+    hero_cap:'La vista da casa',wf_net:'Rete',copy_pw:'Copia password',
+    d_house:'La casa',g1:'Il soggiorno',g2:'La cucina, attrezzata',g3:'La camera matrimoniale',g4:'Il bagno con doccia',
+    d_rules:'Poche regole',ru1:'Non si fuma in casa.',ru2:'Animali non ammessi.',ru3:'Quando uscite, spegnete climatizzatore e TV.',ru4:'Trattate con cura gli oggetti della casa.',ru5:"Lasciate l'appartamento in ordine alla partenza.",
+    d_tip:'Il consiglio di oggi',d_sig:'— Lucia, la vostra host',
+    d_sun:'Tramonto',d_suns:'calcolato per Procida',d_meteo:'Meteo',d_meteos:'previsioni per Procida',d_beach:'Spiagge vicine',
+    b1:'Spiaggia della Chiaia',b2:'Spiaggia della Lingua',b3d:'bus o taxi',d_num:'Numeri utili',n1:'Emergenze',k_in:'Le chiavi',
+    x_moment:'Grazie di essere stati qui.',x_lead:'Check-out tra le 10:00 e le 11:00.',x_back:'Corsa di ritorno',x_meta:'Da Marina Grande · scegliete la vostra corsa',
+    x_note:'Calcolate 20 minuti per arrivare al porto con i bagagli.',x_ret:'Tornate a trovarci',x_rett:'La prossima volta prenotate direttamente con noi: con questo codice avete uno sconto riservato.',
+    x_book:'Scrivici per il prossimo soggiorno',wa_back:'Ciao Lucia! Siamo stati a Corricella House e vorremmo tornare. Codice BENTORNATI.',x_rev:'Lasciate una recensione su Booking',
+    t_hint:'Mostrate questa schermata al tassista.',close:'Chiudi',
+    routes:{aero:[['Alibus dall\'aeroporto','Fermata Molo Beverello, circa 30-40 minuti'],['Molo Beverello','Biglietteria aliscafi per Procida'],['Aliscafo','Circa 40 minuti fino a Marina Grande'],['Taxi o autobus','Fino a San Rocco, davanti alla chiesetta']],
+      staz:[['Da Napoli Centrale','Taxi o tram fino al porto, circa 15-20 minuti'],['Molo Beverello o Porta di Massa','Beverello per gli aliscafi, Porta di Massa per i traghetti'],['Aliscafo o traghetto','40 minuti l\'aliscafo, circa un\'ora il traghetto'],['Taxi o autobus','Fino a San Rocco, davanti alla chiesetta']],
+      pozz:[['Porto di Pozzuoli','Comodo se arrivate in auto o da Roma'],['Traghetto o aliscafo','Tratta breve, circa 20-30 minuti'],['Marina Grande','Taxi o autobus fino a San Rocco, davanti alla chiesetta']]}},
+  en:{hello:'Hi',hello0:'Welcome to Procida',demo:'Preview · simulate the day',c_prima:'A week before',c_arrivo:'Arrival day',c_durante:'During your stay',c_partenza:'Last day',c_all:'Full guide',
+    stay:'Your stay',nights:'nights',night:'night',p_moment:'Procida is waiting for you.',p_days:'days to go.',checkin:'Check-in from 12:00',p_how:'Getting to the port',
+    r_aero:'Airport',r_staz:'Central Station',r_pozz:'Pozzuoli',p_pack:'Packing list',
+    k1:'Light luggage or a backpack: Corricella is reached on foot, with a few steps.',k2:'Comfortable shoes for slopes and stairs, plus water shoes for the rocks.',k3:'Beach towel: the nearby beaches are free.',k4:'ID document for check-in.',
+    a_moment:'Arrival day.',a_lead:'Once you reach the port of Naples, everything you need is below, in order.',a_next:'Naples → Procida',a_meta:'Hydrofoil about 40 minutes, ferry about an hour · arrives at Marina Grande',
+    a_note:'Timetables change with the season: always check the company website before you travel.',a_taxi:'Show this to the taxi driver',a_walk:'The last stretch on foot',
+    walk:['You are at San Rocco: bus stop, little church and the tobacco shop with a swordfish painted on the wall. From here on, you walk.',
+      'Follow the brown "Marina Corricella" sign and take the way down between the pink houses.',
+      'Keep going down, past the small shrine with the image of the Madonna and under the arches.',
+      'At the bottom the little harbour opens up: you are at Marina di Corricella.',
+      "Walk along the quay, with the fishermen's boats on your right.",
+      'Carry on along the waterfront, past the pink house with the arch.',
+      'Continue between the restaurant tables, below the yellow church.',
+      'Via Marina Corricella 58, second floor: welcome home!'],
+    wk_step:'Step',wk_of:'of',wk_left:'← Turn left here',wk_prev:'← Back',wk_next:'Next →',wk_src:'Image: Google Street View',wk_pend:'Photo of the door coming soon',
+    a_lost:'Running late or lost?',copy:'Copy number',copied:'Copied',a_wa:'Message Lucia on WhatsApp, she will answer personally.',
+    app_h:'Plan your stay',app_t:'Download the Procida Island app before you leave: our guests use it to plan their days and book ahead.',app_l1:'Excursions and boat trips',app_l2:'Restaurants and beach clubs',app_l3:'Ferry and bus times, maps and services',app_d:'For everything else on the island, open the Procida Island app.',
+    hero_cap:'The view from the house',wf_net:'Network',copy_pw:'Copy password',
+    d_house:'The house',g1:'The living room',g2:'The fully equipped kitchen',g3:'The double bedroom',g4:'The bathroom with shower',
+    d_rules:'A few house rules',ru1:'No smoking inside.',ru2:'Pets are not allowed.',ru3:'Please turn off the air conditioning and TV when you go out.',ru4:'Please handle everything in the house with care.',ru5:'Please leave the apartment tidy when you leave.',
+    d_tip:"Today's tip",d_sig:'— Lucia, your host',
+    d_sun:'Sunset',d_suns:'calculated for Procida',d_meteo:'Weather',d_meteos:'forecast for Procida',d_beach:'Nearby beaches',
+    b1:'Chiaia beach',b2:'Lingua beach',b3d:'bus or taxi',d_num:'Useful numbers',n1:'Emergency',k_in:'The keys',
+    x_moment:'Thank you for staying with us.',x_lead:'Check-out between 10:00 and 11:00.',x_back:'Ride back',x_meta:'From Marina Grande · choose your ride',
+    x_note:'Allow 20 minutes to reach the port with your luggage.',x_ret:'Come back soon',x_rett:'Next time, book directly with us: this code gives you a returning-guest discount.',
+    x_book:'Message us for your next stay',wa_back:'Hi Lucia! We stayed at Corricella House and would love to come back. Code BENTORNATI.',x_rev:'Leave a review on Booking',
+    t_hint:'Show this screen to your taxi driver. The text is in Italian on purpose.',close:'Close',
+    routes:{aero:[['Alibus from the airport','Molo Beverello stop, about 30-40 minutes'],['Molo Beverello','Hydrofoil ticket office for Procida'],['Hydrofoil','About 40 minutes to Marina Grande'],['Taxi or bus','To San Rocco, in front of the little church']],
+      staz:[['From Napoli Centrale','Taxi or tram to the port, about 15-20 minutes'],['Molo Beverello or Porta di Massa','Beverello for hydrofoils, Porta di Massa for ferries'],['Hydrofoil or ferry','40 minutes by hydrofoil, about an hour by ferry'],['Taxi or bus','To San Rocco, in front of the little church']],
+      pozz:[['Port of Pozzuoli','Handy if you arrive by car or from Rome'],['Ferry or hydrofoil','Short crossing, about 20-30 minutes'],['Marina Grande','Taxi or bus to San Rocco, in front of the little church']]}}
+  };
+  // ===== Configurazione =====
+  var SITE='https://corricellahouseprocida.github.io/';
+  var SHEET_ID='';            // ID del foglio Google "Corricella Companion - Contenuti"
+  var PHONE='393382220157';
+  // Contenuti di riserva, usati se il foglio non è raggiungibile
+  var DATA={
+    tips:[{it:'Se tira scirocco, la Chiaiolella è più riparata. Andateci nel pomeriggio e restate per il tramonto.',en:'When the scirocco blows, Chiaiolella is more sheltered. Go in the afternoon and stay for the sunset.'}],
+    nums:[{it:'Emergenze',en:'Emergency',n:'112'}],
+    info:{}
+  };
+
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+  var DAY=864e5;
+  function midday(d){d=new Date(d);d.setHours(12,0,0,0);return d}
+  function parseD(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(+m[1],m[2]-1,+m[3],12):null}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  var Q=new URLSearchParams(location.search);
+  var guest=(Q.get('n')||'').slice(0,40);
+  var arrive=parseD(Q.get('a')), leave=parseD(Q.get('p'));
+  if(arrive&&leave&&leave<=arrive)leave=null;
+  var wifi=Q.get('w')||'';
+  var isDemo=Q.has('demo'), isHost=Q.has('host');
+  var today=midday(new Date());
+  if(isDemo&&!arrive){arrive=new Date(today.getTime()+7*DAY);leave=new Date(arrive.getTime()+4*DAY);if(!guest)guest='Anna'}
+
+  var lang=Q.get('l')||ls('cc-lang')||((navigator.language||'it').slice(0,2)==='it'?'it':'en');
+  if(!T[lang])lang='it';
+
+  function autoPhase(){
+    if(!arrive)return 'all';
+    var d=Math.round((today-arrive)/DAY);
+    if(d<0)return 'prima';
+    if(d===0)return 'arrivo';
+    if(leave&&today<leave)return 'durante';
+    if(!leave&&d<=3)return 'durante';
+    return 'partenza';
+  }
+  var phase=autoPhase(), curRoute='aero';
+  if(isDemo){var sp=ls('cc-demo-phase');if(sp)phase=sp}
+  var offsets={prima:-7,arrivo:0,durante:2,partenza:4,all:0};
+
+  function nightsTxt(t){var n=Math.round((leave-arrive)/DAY);return n+' '+(n===1?t.night:t.nights)}
+  function render(){
+    var t=T[lang], loc=lang==='it'?'it-IT':'en-GB';
+    document.documentElement.lang=lang;
+    if(DATA.info.checkin){T.it.checkin=DATA.info.checkin.it;T.en.checkin=DATA.info.checkin.en}
+    document.querySelectorAll('[data-t]').forEach(function(el){var v=t[el.dataset.t];if(v!=null)el.textContent=v});
+    document.querySelectorAll('[data-l]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang)});
+    document.querySelector('h1').textContent=guest?t.hello+' '+guest:t.hello0;
+    var f=function(d){return d.toLocaleDateString(loc,{day:'numeric',month:'long'})};
+    var st=document.getElementById('stay');
+    if(arrive&&leave){st.hidden=false;st.innerHTML=t.stay+': <b>'+f(arrive)+' → '+f(leave)+'</b> · '+nightsTxt(t)}else st.hidden=true;
+    renderData();
+    route(curRoute); walk(wk); show(phase);
+  }
+
+  function pick(o){return o[lang]||o.it||''}
+  function renderData(){
+    var tips=DATA.tips.length?DATA.tips:[{it:'',en:''}];
+    var doy=Math.floor((today-new Date(today.getFullYear(),0,0))/DAY);
+    document.getElementById('tip').textContent=pick(tips[doy%tips.length]);
+    document.getElementById('nums').innerHTML=DATA.nums.map(function(r){
+      return '<li><span>'+esc(pick(r))+'</span><span class="d">'+esc(r.n)+'</span></li>'}).join('');
+    var ki=DATA.info.chiavi_arrivo, ko=DATA.info.chiavi_partenza;
+    document.getElementById('keys-in-card').hidden=!(ki&&pick(ki));
+    if(ki)document.getElementById('keys-in').textContent=pick(ki);
+    document.getElementById('keys-out').textContent=ko?pick(ko):'';
+    var wa=encodeURIComponent(T[lang].wa_back);
+    document.getElementById('book-link').href='https://wa.me/'+PHONE+'?text='+wa;
+  }
+
+  // Percorso a piedi da San Rocco: foto 1-7 (1-6 Street View), 8 in arrivo
+  var WK=[{i:'walk1.jpg',g:1},{i:'walk2.jpg',g:1},{i:'walk3.jpg',g:1},{i:'walk4.jpg',g:1,left:1},{i:'walk5.jpg',g:1},{i:'walk6.jpg',g:1},{i:'walk7.jpg',pos:'center 35%'},{i:null}];
+  var wk=0;
+  function walk(n){
+    wk=Math.max(0,Math.min(WK.length-1,n));
+    var t=T[lang], s=WK[wk], img=document.getElementById('wk-img'), ph=document.getElementById('wk-ph');
+    document.getElementById('wk-n').textContent=t.wk_step+' '+(wk+1)+' '+t.wk_of+' '+WK.length;
+    var turn=document.getElementById('wk-turn'); turn.hidden=!s.left; turn.textContent=t.wk_left;
+    if(s.i){img.hidden=false;ph.hidden=true;img.src='img/'+s.i;img.style.objectPosition=s.pos||'center'}
+    else{img.hidden=true;ph.hidden=false;ph.textContent=t.wk_pend}
+    document.getElementById('wk-tx').textContent=t.walk[wk];
+    document.getElementById('wk-src').textContent=s.g?t.wk_src:'';
+    var p=document.getElementById('wk-prev'), nx=document.getElementById('wk-next');
+    p.textContent=t.wk_prev; nx.textContent=t.wk_next; p.disabled=wk===0; nx.disabled=wk===WK.length-1;
+    document.getElementById('wk-dots').innerHTML=WK.map(function(_,k){return '<button aria-label="'+(k+1)+'"'+(k===wk?' aria-current="true"':'')+' data-k="'+k+'"></button>'}).join('');
+  }
+  document.getElementById('wk-prev').addEventListener('click',function(){walk(wk-1)});
+  document.getElementById('wk-next').addEventListener('click',function(){walk(wk+1)});
+  document.getElementById('wk-dots').addEventListener('click',function(e){var k=e.target.dataset&&e.target.dataset.k;if(k!=null)walk(+k)});
+  var wkx=null, fr=document.querySelector('.wk-frame');
+  fr.addEventListener('touchstart',function(e){wkx=e.touches[0].clientX},{passive:true});
+  fr.addEventListener('touchend',function(e){if(wkx==null)return;var d=e.changedTouches[0].clientX-wkx;if(Math.abs(d)>40)walk(wk+(d<0?1:-1));wkx=null});
+
+  function show(p){
+    phase=p; if(isDemo)ls('cc-demo-phase',p);
+    document.body.classList.toggle('all',p==='all');
+    document.querySelectorAll('section.phase').forEach(function(s){s.hidden=isHost||!(p==='all'||s.dataset.phase===p)});
+    document.querySelectorAll('[data-p]').forEach(function(c){c.setAttribute('aria-pressed',c.dataset.p===p)});
+    var wc=document.getElementById('wifi-card'), sec=document.querySelector('section[data-phase="'+(p==='arrivo'?'arrivo':'durante')+'"]');
+    if(p==='arrivo')sec.appendChild(wc); else sec.insertBefore(wc,sec.querySelector('.facts'));
+    wc.hidden=!wifi||!(p==='arrivo'||p==='durante'||p==='all');
+    var ref=isDemo&&arrive?new Date(arrive.getTime()+offsets[p]*DAY):today;
+    var cnt=document.getElementById('count');
+    if(arrive&&p!=='all'){cnt.hidden=false;document.getElementById('days').textContent=Math.max(0,Math.round((arrive-ref)/DAY))}else cnt.hidden=true;
+    document.getElementById('sunset').textContent=sunset(p==='prima'&&arrive?arrive:ref);
+  }
+  function route(r){
+    curRoute=r;
+    document.querySelectorAll('[data-r]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.r===r)});
+    document.getElementById('route').innerHTML=T[lang].routes[r].map(function(s,i){return '<li><span class="dot">'+(i+1)+'</span><div class="tx">'+s[0]+'<small>'+s[1]+'</small></div></li>'}).join('');
+  }
+
+  document.querySelectorAll('[data-p]').forEach(function(c){c.addEventListener('click',function(){show(c.dataset.p)})});
+  document.querySelectorAll('[data-r]').forEach(function(b){b.addEventListener('click',function(){route(b.dataset.r)})});
+  document.querySelectorAll('[data-l]').forEach(function(b){b.addEventListener('click',function(){lang=b.dataset.l;ls('cc-lang',lang);render()})});
+
+  document.querySelectorAll('#pack input').forEach(function(i){
+    i.checked=ls('cc-'+i.id)==='1';
+    i.addEventListener('change',function(){ls('cc-'+i.id,i.checked?'1':'0')});
+  });
+
+  var taxi=document.getElementById('taxi');
+  document.getElementById('open-taxi').addEventListener('click',function(){taxi.hidden=false;document.getElementById('close-taxi').focus()});
+  document.getElementById('close-taxi').addEventListener('click',function(){taxi.hidden=true});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')taxi.hidden=true});
+
+  document.getElementById('copy-phone').addEventListener('click',function(){
+    var b=this, el=document.getElementById('phone');
+    function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+    if(navigator.clipboard){navigator.clipboard.writeText(el.textContent).then(function(){b.textContent=T[lang].copied},sel)}else sel();
+  });
+
+  var ua=navigator.userAgent||'';
+  if(/android/i.test(ua))document.querySelectorAll('.st-ios').forEach(function(a){a.hidden=true});
+  else if(/iphone|ipad|ipod/i.test(ua))document.querySelectorAll('.st-and').forEach(function(a){a.hidden=true});
+
+  document.getElementById('copy-wifi').addEventListener('click',function(){
+    var b=this, el=document.getElementById('wpass');
+    function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+    if(navigator.clipboard){navigator.clipboard.writeText(el.textContent).then(function(){b.textContent=T[lang].copied},sel)}else sel();
+  });
+
+
+  // Wi-Fi solo nel link personale
+  if(wifi){document.getElementById('wifi-card').hidden=false;document.getElementById('wpass').textContent=wifi}
+  document.getElementById('demo').hidden=!isDemo;
+
+  // ===== Contenuti dal foglio Google =====
+  function csv(text){
+    var rows=[],row=[],cell='',q=false;
+    for(var i=0;i<text.length;i++){var ch=text[i];
+      if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}
+      else if(ch==='"')q=true; else if(ch===','){row.push(cell);cell=''}
+      else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell=''} else if(ch!=='\r')cell+=ch}
+    if(cell||row.length){row.push(cell);rows.push(row)}
+    var h=(rows.shift()||[]).map(function(x){return x.trim().toLowerCase()});
+    return rows.map(function(r){var o={};h.forEach(function(k,i){o[k]=(r[i]||'').trim()});return o});
+  }
+  function tab(name){
+    return fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&headers=1&sheet='+encodeURIComponent(name))
+      .then(function(r){if(!r.ok)throw 0;return r.text()}).then(csv);
+  }
+  function on(v){return !/^(no|n|0|false)$/i.test((v||'').trim())}
+  if(SHEET_ID){
+    Promise.all([tab('Consigli'),tab('Numeri'),tab('Info')]).then(function(res){
+      var tips=res[0].filter(function(r){return on(r.attivo)&&r.italiano}).map(function(r){return{it:r.italiano,en:r.inglese||r.italiano}});
+      var nums=res[1].filter(function(r){return on(r.attivo)&&r.numero&&r.nome_it}).map(function(r){return{it:r.nome_it,en:r.nome_en||r.nome_it,n:r.numero}});
+      var info={};res[2].forEach(function(r){if(r.chiave&&r.italiano)info[r.chiave.trim().toLowerCase()]={it:r.italiano,en:r.inglese||r.italiano}});
+      if(tips.length)DATA.tips=tips; if(nums.length)DATA.nums=nums; DATA.info=info;
+      render();
+    }).catch(function(){});
+  }
+
+  // ===== Area host: generatore di link e QR =====
+  if(isHost){
+    document.getElementById('host').hidden=false;
+    var gn=document.getElementById('g-n'),ga=document.getElementById('g-a'),gp=document.getElementById('g-p'),gl=document.getElementById('g-l'),gw=document.getElementById('g-w');
+    gw.value=ls('cc-host-wifi')||'';
+    function gen(){
+      ls('cc-host-wifi',gw.value);
+      var out=document.getElementById('g-out'),wa=document.getElementById('g-wa'),op=document.getElementById('g-open');
+      if(!ga.value||!gp.value||gp.value<=ga.value){out.textContent=ga.value&&gp.value?'La partenza deve essere dopo l\'arrivo.':'Compila arrivo e partenza.';wa.removeAttribute('href');op.removeAttribute('href');return ''}
+      var p=new URLSearchParams();if(gn.value.trim())p.set('n',gn.value.trim());p.set('a',ga.value);p.set('p',gp.value);p.set('l',gl.value);if(gw.value.trim())p.set('w',gw.value.trim());
+      var link=SITE+'?'+p.toString();
+      out.textContent=link;
+      var nm=gn.value.trim();
+      var msg=gl.value==='en'
+        ?'Hi'+(nm?' '+nm:'')+'! Here is your guide for your stay at Corricella House: '+link+'\nSee you soon in Procida, Lucia'
+        :'Ciao'+(nm?' '+nm:'')+'! Ecco la guida per il vostro soggiorno a Corricella House: '+link+'\nA presto a Procida, Lucia';
+      wa.href='https://wa.me/?text='+encodeURIComponent(msg); op.href=link;
+      return link;
+    }
+    [gn,ga,gp,gl,gw].forEach(function(el){el.addEventListener('input',gen);el.addEventListener('change',gen)});
+    document.getElementById('gen').addEventListener('submit',function(e){e.preventDefault()});
+    document.getElementById('g-copy').addEventListener('click',function(){
+      var l=gen(),b=this;if(!l)return;
+      if(navigator.clipboard)navigator.clipboard.writeText(l).then(function(){b.textContent='Copiato'},function(){});
+    });
+    document.getElementById('qrurl').textContent=SITE;
+    try{var q=qrcode(0,'M');q.addData(SITE);q.make();document.getElementById('qr').innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
+  }
+
+  // Tramonto (algoritmo NOAA semplificato) per Procida
+  function sunset(date){
+    var lat=40.76, lon=14.02, rad=Math.PI/180;
+    var N=Math.floor((date-new Date(date.getFullYear(),0,0))/DAY), g=2*Math.PI/365*(N-1);
+    var eq=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+    var dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+    var ha=Math.acos(Math.cos(90.833*rad)/(Math.cos(lat*rad)*Math.cos(dec))-Math.tan(lat*rad)*Math.tan(dec))/rad;
+    var d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())+(720-4*(lon-ha)-eq)*6e4);
+    return d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Rome'});
+  }
+
+
+  if(!offsets.hasOwnProperty(phase))phase=autoPhase();
+  render();
+})();
+</script>
+</body>
+</html>
