@@ -6,6 +6,12 @@
 <title>Corricella House · Guida ospiti</title>
 <meta name="description" content="La guida per gli ospiti di Corricella House, Marina Corricella, Procida.">
 <meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Corricella House · Procida">
+<meta property="og:title" content="Corricella House · La vostra guida al soggiorno">
+<meta property="og:description" content="Come arrivare, il percorso fino a casa, il Wi-Fi e i consigli di Lucia su Procida.">
+<meta property="og:image" content="https://corricellahouseprocida.github.io/img/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <link rel="icon" href="img/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
@@ -327,7 +333,7 @@ section.phase{scroll-margin-top:70px}
     <div class="card" id="wifi-card" hidden>
       <h3>Wi-Fi</h3>
       <div class="wifi">
-        <div><div class="k" data-t="wf_net"></div><div class="v">CASA TERESA</div></div><span></span>
+        <div><div class="k" data-t="wf_net"></div><div class="v" id="wnet"></div></div><span></span>
         <div><div class="k">Password</div><div class="v" id="wpass"></div></div>
         <button class="chip" id="copy-wifi" data-t="copy_pw"></button>
       </div>
@@ -501,7 +507,8 @@ section.phase{scroll-margin-top:70px}
   var today=midday(new Date());
   if(isDemo&&!arrive){arrive=new Date(today.getTime()+7*DAY);leave=new Date(arrive.getTime()+4*DAY);if(!guest)guest='Anna'}
 
-  var lang=Q.get('l')||ls('cc-lang')||(function(){var b=(navigator.language||'it').slice(0,2);return b==='it'||b==='fr'?b:'en'})();
+  var FL=(/^\/(en|fr)\//.exec(location.pathname)||[])[1];
+  var lang=Q.get('l')||FL||ls('cc-lang')||(function(){var b=(navigator.language||'it').slice(0,2);return b==='it'||b==='fr'?b:'en'})();
   if(!T[lang])lang='it';
 
   function autoPhase(){
@@ -583,7 +590,10 @@ section.phase{scroll-margin-top:70px}
     document.querySelector('[data-t=x_moment]').textContent=ahead&&real!=='partenza'?t.x_moment_alt:t.x_moment;
     var wc=document.getElementById('wifi-card'), sec=document.querySelector('section[data-phase="'+(p==='arrivo'?'arrivo':'durante')+'"]');
     if(p==='arrivo')sec.appendChild(wc); else sec.insertBefore(wc,sec.querySelector('.facts'));
-    wc.hidden=!wifi||!(p==='arrivo'||p==='durante'||p==='all');
+    var wpw=wifi||(DATA.info.wifi_password&&DATA.info.wifi_password.it)||'';
+    var wnet=(DATA.info.wifi_rete&&DATA.info.wifi_rete.it)||'';
+    document.getElementById('wpass').textContent=wpw; document.getElementById('wnet').textContent=wnet||'—';
+    wc.hidden=!arrive||!wpw||!(p==='arrivo'||p==='durante');
     var ref=isDemo&&arrive?new Date(arrive.getTime()+offsets[p]*DAY):today;
     var cnt=document.getElementById('count');
     if(arrive&&p!=='all'){cnt.hidden=false;document.getElementById('days').textContent=Math.max(0,Math.round((arrive-ref)/DAY))}else cnt.hidden=true;
@@ -631,7 +641,6 @@ section.phase{scroll-margin-top:70px}
 
 
   // Wi-Fi solo nel link personale
-  if(wifi){document.getElementById('wifi-card').hidden=false;document.getElementById('wpass').textContent=wifi}
   document.getElementById('demo').hidden=!isDemo;
 
   // ===== Contenuti dallo script Google (gestiti dalla dashboard) =====
